@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . './config.php';
+require "chatservice.php";
 class LoginService
 {
     function LogIn($email, $password){
@@ -77,4 +78,8 @@ class LoginService
     }
 }
 $LoginService = new LoginService();
+$ChatService = new ChatService();
 echo $LoginService->LogIn("kuenzlil@bzz.ch", "1234");
+echo $ChatService->NewMessage("Hello World", 6, 2);
+echo $ChatService->GetMessages(2);
+$ChatService->sendEmail("kuenzlil@bzz.ch", 2, "realtimechat");

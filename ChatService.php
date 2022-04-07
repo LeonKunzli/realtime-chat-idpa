@@ -2,14 +2,14 @@
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
-require 'Exception.php';
-require 'PHPMailer.php';
-require 'SMTP.php';
-require 'LoginService.php';
+require_once 'Exception.php';
+require_once 'PHPMailer.php';
+require_once 'SMTP.php';
+require_once 'LoginService.php';
 require_once __DIR__ . './config.php';
 class ChatService {
     function GetMessages($chat_id){
-        LoginService->AuthorizeToken();
+        //LoginService->AuthorizeToken();
         $db = new Connect;
         $messages = array();
         $data = $db->prepare('SELECT * FROM message WHERE message.chat_id = :chat_id');
@@ -30,7 +30,7 @@ class ChatService {
     }
 
     function NewMessage($content, $user_id, $chat_id){
-        LoginService->AuthorizeToken();
+        //LoginService->AuthorizeToken();
         $db = new Connect;
         $data = $db->prepare('INSERT INTO message(messageUUID, content, user_id, chat_id) VALUES(:messageUUID, :content, :user_id, :chat_id)');
         $data->execute([
@@ -43,7 +43,7 @@ class ChatService {
     }
 
     function sendEmail($email, $chat_id, $username){
-        LoginService->AuthorizeToken();
+        //LoginService->AuthorizeToken();
         $msg = "Hier ist Ihr Chat: \n";
         $db = new Connect;
         $data = $db->prepare('SELECT u.username, content FROM message INNER JOIN chatuser u ON message.user_id = u.user_id WHERE message.chat_id = :chat_id;');
@@ -82,8 +82,4 @@ class ChatService {
         }
     }
 }
-
-$ChatService = new ChatService();
-header('Content-Type: application/json');
-$ChatService->sendEmail('kuenzlil@bzz.ch', 1, "lonknz");
 ?>
