@@ -4,7 +4,7 @@ class API {
     function Select(){
         $db = new Connect;
         $users = array();
-        $data = $db->prepare('SHOW TABLES');
+        $data = $db->prepare('SELECT * FROM chatuser ORDER BY user_id');
         $data->execute();
         while($OutputData = $data->fetch(PDO::FETCH_ASSOC)){
             $users[$OutputData['user_id']] = array(
