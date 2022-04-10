@@ -6,7 +6,7 @@ require_once 'Exception.php';
 require_once 'PHPMailer.php';
 require_once 'SMTP.php';
 require_once 'LoginService.php';
-require_once __DIR__ . './config.php';
+require_once __DIR__ . '/config.php';
 class ChatService {
     function GetMessages($chat_id){
         LoginService::AuthorizeToken();
