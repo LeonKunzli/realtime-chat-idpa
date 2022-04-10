@@ -17,7 +17,7 @@ class LoginService
         return json_encode($OutputData);
     }
 
-    function AuthorizeToken(){
+    static function AuthorizeToken(){
         //see if token was created more than 30 mins ago
         $token = $_SESSION["token"];
         $db = new Connect;
@@ -49,6 +49,7 @@ class LoginService
         }
         else{
             //TODO: if email is not unique
+            exit;
         }
     }
 
@@ -60,6 +61,9 @@ class LoginService
         ]);
         $OutputData = $data->fetch(PDO::FETCH_ASSOC);
         if($OutputData["COUNT(user_id)"]!=0){
+            return false;
+        }
+        if(!(filter_var($email, FILTER_VALIDATE_EMAIL))){
             return false;
         }
         return true;
