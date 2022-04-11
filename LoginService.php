@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/config.php';
-require "ChatService.php";
+require_once "ChatService.php";
 class LoginService
 {
     static function LogIn($email, $password){
