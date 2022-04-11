@@ -1,4 +1,4 @@
 <?php
-require "LoginService.php";
+require_once "LoginService.php";
     LoginService::LogOff();
 ?>
