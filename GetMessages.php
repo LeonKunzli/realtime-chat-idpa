@@ -1,4 +1,5 @@
 <?php
+require "ChatService.php";
 if(isset($_GET['chat_id'])){
     echo ChatService::GetMessages($_GET['chat_id']);
 }
