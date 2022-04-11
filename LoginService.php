@@ -3,7 +3,7 @@ require_once __DIR__ . '/config.php';
 require "ChatService.php";
 class LoginService
 {
-    function LogIn($email, $password){
+    static function LogIn($email, $password){
         //check if is correct in db
         $db = new Connect;
         $data = $db->prepare('SELECT * FROM chatuser WHERE email = :email AND password = :password');
@@ -13,7 +13,7 @@ class LoginService
         ]);
         $OutputData = $data->fetch(PDO::FETCH_ASSOC);
         //put token into database with expiry date
-        $this->createToken($OutputData["user_id"]);
+        LoginService::createToken($OutputData["user_id"]);
         return json_encode($OutputData);
     }
 
@@ -32,13 +32,13 @@ class LoginService
         return $OutputData["user_id"];
     }
 
-    function LogOff(){
+    static function LogOff(){
         session_destroy();
     }
 
-    function Register($email, $username, $password, $role_id){
+    static function Register($email, $username, $password, $role_id){
         $db = new Connect;
-        if($this->IsEmailUnique($email)) {
+        if(LoginService::IsEmailUnique($email)) {
             $data = $db->prepare('INSERT INTO chatuser(email, username, password, role_id) VALUES(:email, :username, :password, :role_id)');
             $data->execute([
                 ':email' => $email,
@@ -53,7 +53,7 @@ class LoginService
         }
     }
 
-    function IsEmailUnique($email){
+    static function IsEmailUnique($email){
         $db = new Connect;
         $data = $db->prepare('SELECT COUNT(user_id) FROM chatuser WHERE email = :email');
         $data->execute([
@@ -69,7 +69,7 @@ class LoginService
         return true;
     }
 
-    function CreateToken($user_id){
+    static function CreateToken($user_id){
         $token = uniqid("t_");
         session_start();
         $_SESSION["token"] = $token;
