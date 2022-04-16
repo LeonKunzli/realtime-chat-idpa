@@ -86,7 +86,7 @@ class ChatService {
         ]);
         $chat_id = self::getChatFromUUID($chatUUID);
         //Create user_chats for both users
-        $data = $db->prepare('INSERT INTO user_chat(user_id, chat_id) VALUES((SELECT user_id FROM chatuser WHERE email = :email), :chat_id)');
+        $data = $db->prepare('INSERT INTO user_chat(user_id, chat_id) VALUES((SELECT user_id FROM chatuser WHERE email = :email LIMIT 1), :chat_id)');
         $data->execute([
             ':chat_id' => $chat_id,
             ':email' => $emailOfCustomer
