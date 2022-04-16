@@ -27,6 +27,8 @@ class ChatService {
             return json_encode($messages);
         }
         else{
+            'You are not in the requested Chat';
+            http_response_code(401);
             exit;
         }
     }
@@ -62,8 +64,14 @@ class ChatService {
             return ChatService::GetMessages($chat_id);
         }
         else{
+            echo 'You are not in the requested Chat';
+            http_response_code(401);
             exit;
         }
+    }
+
+    static function endChat($chat_id){
+        //update chatstatus to be finished
     }
 
     static function getEmailFromUser(){
@@ -75,7 +83,7 @@ class ChatService {
         ]);
         return $data->fetch(PDO::FETCH_ASSOC);
     }
-
+/*
     static function createChat($emailOfCustomer){
         $db = new Connect;
         //create the chat
@@ -85,19 +93,12 @@ class ChatService {
             ':chatUUID' => $chatUUID
         ]);
         $chat_id = self::getChatFromUUID($chatUUID);
-        //Find User from Email (Sub Query does not work, since PDO thinks it will return an array)
-        $data = $db->prepare('SELECT user_id FROM chatuser WHERE email = :email');
-        $data->execute([
-            ':email' => $emailOfCustomer
-        ]);
-        while ($OutputData = $data->fetch(PDO::FETCH_ASSOC)) {
-            $customer_id = $OutputData['user_id'];
-        }
         //Create user_chats for both users
-        $data = $db->prepare('INSERT INTO user_chat(user_id, chat_id) VALUES(:customer_id, :chat_id)');
+        //TODO: fix incorrect integer value thing
+        $data = $db->prepare('INSERT INTO user_chat(user_id, chat_id) VALUES((SELECT user_id FROM chatuser WHERE email = :email), :chat_id)');
         $data->execute([
             ':chat_id' => $chat_id,
-            ':customer_id' => $customer_id
+            ':email' => $emailOfCustomer
         ]);
         $data = $db->prepare('INSERT INTO user_chat(user_id, chat_id) VALUES(:techSupport_id, :chat_id)');
         $data->execute([
@@ -128,13 +129,10 @@ class ChatService {
             exit;
         }
         else{
-            while ($OutputData) {
-                $techSupportId = $OutputData['user_id'];
-            }
-            return $techSupportId;
+            return $OutputData;
         }
     }
-
+*/
     static function sendEmail($chat_id){
         $user_id = LoginService::AuthorizeToken();
         $email = ChatService::getEmailFromUser();

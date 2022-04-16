@@ -44,6 +44,8 @@ class LoginService
         ]);
         $OutputData = $data->fetch(PDO::FETCH_ASSOC);
         if($OutputData==false){
+            echo 'Your Token has expired.';
+            http_response_code(401);
             exit();
         }
         return $OutputData["user_id"];
