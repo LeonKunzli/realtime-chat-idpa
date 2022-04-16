@@ -85,11 +85,17 @@ class ChatService {
             ':chatUUID' => $chatUUID
         ]);
         $chat_id = self::getChatFromUUID($chatUUID);
+        //Find User from Email (Sub Query does not work, since PDO thinks it will return an array)
+        $data = $db->prepare('SELECT user_id FROM chatuser WHERE email = :email');
+        $data->execute([
+            ':email' => $emailOfCustomer
+        ]);
+        $customer_id = $data->fetch(PDO::FETCH_ASSOC);
         //Create user_chats for both users
-        $data = $db->prepare('INSERT INTO user_chat(user_id, chat_id) VALUES((SELECT user_id FROM chatuser WHERE email = :email LIMIT 1), :chat_id)');
+        $data = $db->prepare('INSERT INTO user_chat(user_id, chat_id) VALUES(:customer_id, :chat_id)');
         $data->execute([
             ':chat_id' => $chat_id,
-            ':email' => $emailOfCustomer
+            ':customer_id' => $customer_id
         ]);
         $data = $db->prepare('INSERT INTO user_chat(user_id, chat_id) VALUES(:techSupport_id, :chat_id)');
         $data->execute([
