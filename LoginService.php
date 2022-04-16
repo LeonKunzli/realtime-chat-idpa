@@ -14,7 +14,18 @@ class LoginService
         $OutputData = $data->fetch(PDO::FETCH_ASSOC);
         //put token into database with expiry date
         LoginService::createToken($OutputData["user_id"]);
+        self::updateUserStatus(1);
         return json_encode($OutputData);
+    }
+
+    static function updateUserStatus($status){
+        $user = self::AuthorizeToken();
+        $db = new Connect;
+        $data = $db->prepare('UPDATE chatuser SET status_id = :status WHERE user_id = :user_id');
+        $data->execute([
+            ':status' => $status,
+            ':user_id' => $user
+        ]);
     }
 
     static function AuthorizeToken(){
@@ -34,6 +45,7 @@ class LoginService
 
     static function LogOff(){
         session_destroy();
+        self::updateUserStatus(2);
     }
 
     static function Register($email, $username, $password, $role_id){

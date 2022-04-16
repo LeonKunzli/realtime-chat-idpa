@@ -76,6 +76,10 @@ class ChatService {
         return $data->fetch(PDO::FETCH_ASSOC);
     }
 
+    static function createChat(){
+
+    }
+
     static function sendEmail($chat_id){
         $user_id = LoginService::AuthorizeToken();
         $email = ChatService::getEmailFromUser();
