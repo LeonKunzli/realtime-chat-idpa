@@ -90,7 +90,9 @@ class ChatService {
         $data->execute([
             ':email' => $emailOfCustomer
         ]);
-        $customer_id = $data->fetch(PDO::FETCH_ASSOC);
+        while ($OutputData = $data->fetch(PDO::FETCH_ASSOC)) {
+            $customer_id = $OutputData['user_id'];
+        }
         //Create user_chats for both users
         $data = $db->prepare('INSERT INTO user_chat(user_id, chat_id) VALUES(:customer_id, :chat_id)');
         $data->execute([
@@ -126,7 +128,10 @@ class ChatService {
             exit;
         }
         else{
-            return $OutputData;
+            while ($OutputData) {
+                $techSupportId = $OutputData['user_id'];
+            }
+            return $techSupportId;
         }
     }
 
