@@ -79,11 +79,12 @@ class ChatService {
     static function createChat($emailOfCustomer){
         $db = new Connect;
         //create the chat
+        $chatUUID = uniqid("c_");
         $data = $db->prepare('INSERT INTO chat(chatUUID) VALUES(:chatUUID)');
         $data->execute([
-            ':chatUUID' => uniqid("c_")
+            ':chatUUID' => $chatUUID
         ]);
-        $chat_id = (new PDO)->lastInsertId();
+        $chat_id = self::getChatFromUUID($chatUUID);
         //Create user_chats for both users
         $data = $db->prepare('INSERT INTO user_chat(user_id, chat_id) VALUES((SELECT user_id FROM chatuser WHERE email = :email), :chat_id)');
         $data->execute([
@@ -96,6 +97,15 @@ class ChatService {
             ':techSupport_id' => self::getAvailableTechSupport()
         ]);
         return $chat_id;
+    }
+
+    static function getChatFromUUID($chatUUID){
+        $db = new Connect();
+        $data = $db->prepare('SELECT chat_id FROM chat WHERE chatUUID = :chatUUID;');
+        $data->execute([
+            ':chatUUID' => $chatUUID
+        ]);
+        return $data->fetch(PDO::FETCH_ASSOC);
     }
 
     static function getAvailableTechSupport(){
