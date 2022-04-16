@@ -52,7 +52,7 @@ class ChatService {
 
     static function NewMessage($content, $chat_id){
         $user_id = LoginService::AuthorizeToken();
-        if(ChatService::isUserInChat($user_id, $chat_id)) {
+        if(ChatService::isUserInChat($user_id, $chat_id) && !self::isChatFinished($chat_id)) {
             $db = new Connect;
             $data = $db->prepare('INSERT INTO message(messageUUID, content, user_id, chat_id) VALUES(:messageUUID, :content, :user_id, :chat_id)');
             $data->execute([
@@ -67,6 +67,22 @@ class ChatService {
             echo 'You are not in the requested Chat';
             http_response_code(401);
             exit;
+        }
+    }
+
+    static function isChatFinished($chat_id){
+        $user_id = LoginService::AuthorizeToken();
+        $db = new Connect;
+        $data = $db->prepare('SELECT chat_status FROM chat WHERE chat_id = :chat_id;');
+        $data->execute([
+            ':chat_id' => $chat_id
+        ]);
+        $OutputData = $data->fetch(PDO::FETCH_ASSOC);
+        if($OutputData['chat_status']==2){
+            return true;
+        }
+        else{
+            return false;
         }
     }
 
