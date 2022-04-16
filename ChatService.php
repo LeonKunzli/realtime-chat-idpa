@@ -83,7 +83,7 @@ class ChatService {
         $data->execute([
             ':chatUUID' => uniqid("c_")
         ]);
-        $chat_id = PDO::lastInsertId();
+        $chat_id = (new PDO)->lastInsertId();
         //Create user_chats for both users
         $data = $db->prepare('INSERT INTO user_chat(user_id, chat_id) VALUES((SELECT user_id FROM chatuser WHERE email = :email), :chat_id)');
         $data->execute([
