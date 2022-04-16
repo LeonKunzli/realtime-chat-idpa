@@ -72,6 +72,11 @@ class ChatService {
 
     static function endChat($chat_id){
         //update chatstatus to be finished
+        $db = new Connect;
+        $data = $db->prepare('UPDATE chat SET chat_status = 2 WHERE chat_id = :chat_id');
+        $data->execute([
+            ':chat_id' => $chat_id
+        ]);
     }
 
     static function getEmailFromUser(){
