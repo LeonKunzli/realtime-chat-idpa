@@ -76,8 +76,42 @@ class ChatService {
         return $data->fetch(PDO::FETCH_ASSOC);
     }
 
-    static function createChat(){
+    static function createChat($emailOfCustomer){
+        $db = new Connect;
+        //create the chat
+        $data = $db->prepare('INSERT INTO chat(chatUUID) VALUES(:chatUUID)');
+        $data->execute([
+            ':chatUUID' => uniqid("c_")
+        ]);
+        $chat_id = PDO::lastInsertId();
+        //Create user_chats for both users
+        $data = $db->prepare('INSERT INTO user_chat(user_id, chat_id) VALUES((SELECT user_id FROM chatuser WHERE email = :email), :chat_id)');
+        $data->execute([
+            ':chat_id' => $chat_id,
+            ':email' => $emailOfCustomer
+        ]);
+        $data = $db->prepare('INSERT INTO user_chat(user_id, chat_id) VALUES(:techSupport_id, :chat_id)');
+        $data->execute([
+            ':chat_id' => $chat_id,
+            ':techSupport_id' => self::getAvailableTechSupport()
+        ]);
+        return $chat_id;
+    }
 
+    static function getAvailableTechSupport(){
+        $db = new Connect;
+        $data = $db->prepare('SELECT * FROM chatuser u WHERE u.status_id = 1 AND u.role_id = 1 AND (SELECT COUNT(*) FROM (SELECT uc.user_id FROM user_chat uc INNER JOIN chat c ON uc.chat_id = c.chat_id WHERE c.status_id = 1) AS subquery)<5 ORDER BY u.user_id LIMIT 1;
+');
+        $data->execute();
+        $OutputData = $data->fetch(PDO::FETCH_ASSOC);
+        if($OutputData = false){
+            echo 'no available tech support was found';
+            http_response_code(503);
+            exit;
+        }
+        else{
+            return $OutputData;
+        }
     }
 
     static function sendEmail($chat_id){

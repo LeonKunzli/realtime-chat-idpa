@@ -13,13 +13,19 @@ class LoginService
         ]);
         $OutputData = $data->fetch(PDO::FETCH_ASSOC);
         //put token into database with expiry date
+        if($OutputData = false){
+            echo 'password and email do not match';
+            http_response_code(401);
+        }
         LoginService::createToken($OutputData["user_id"]);
         self::updateUserStatus(1);
         return json_encode($OutputData);
     }
 
-    static function updateUserStatus($status){
-        $user = self::AuthorizeToken();
+    static function updateUserStatus($user, $status){
+        if($user = null) {
+            $user = self::AuthorizeToken();
+        }
         $db = new Connect;
         $data = $db->prepare('UPDATE chatuser SET status_id = :status WHERE user_id = :user_id');
         $data->execute([
@@ -43,9 +49,9 @@ class LoginService
         return $OutputData["user_id"];
     }
 
-    static function LogOff(){
+    static function LogOff($user){
+        self::updateUserStatus($user, 2);
         session_destroy();
-        self::updateUserStatus(2);
     }
 
     static function Register($email, $username, $password, $role_id){
@@ -61,6 +67,8 @@ class LoginService
         }
         else{
             //TODO: if email is not unique
+            echo 'this email is already in use';
+            http_response_code(401);
             exit;
         }
     }
@@ -79,6 +87,10 @@ class LoginService
             return false;
         }
         return true;
+    }
+
+    static function getAllInactiveUsers(){
+        //TODO: Get all users with either no session or expired token and log them off
     }
 
     static function CreateToken($user_id){
