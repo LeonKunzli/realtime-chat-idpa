@@ -133,13 +133,13 @@ class ChatService {
 ');
         $data->execute();
         $OutputData = $data->fetch(PDO::FETCH_ASSOC);
-        if($OutputData = false){
+        if(!is_int($OutputData["user_id"])){
             echo 'no available tech support was found';
             http_response_code(503);
             exit;
         }
         else{
-            return $OutputData;
+            return $OutputData["user_id"];
         }
     }
 
