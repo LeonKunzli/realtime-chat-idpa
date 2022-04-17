@@ -100,13 +100,11 @@ class LoginService
         //TODO: Call this every x0 minutes
         //check if token is still veritable
         //have this in the else so less queries are made
-        //TODO: fix bug where only 1 user gets logged out at a time
         $db = new Connect;
         $data = $db->prepare('SELECT * FROM (SELECT t.* FROM token t INNER JOIN chatuser u ON t.user_id = u.user_id WHERE u.status_id = 1 ORDER BY token_id DESC) AS sub_query GROUP BY sub_query.user_id');
         $data->execute();
         while ($OutputData = $data->fetch(PDO::FETCH_ASSOC)) {
             self::AuthorizeToken($OutputData["unique_id"], $OutputData["user_id"], false);
-            echo 'wooo';
         }
     }
 
