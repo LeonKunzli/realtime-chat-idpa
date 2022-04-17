@@ -71,7 +71,6 @@ class ChatService {
     }
 
     static function isChatFinished($chat_id){
-        $user_id = LoginService::AuthorizeToken();
         $db = new Connect;
         $data = $db->prepare('SELECT chat_status FROM chat WHERE chat_id = :chat_id;');
         $data->execute([
@@ -104,7 +103,7 @@ class ChatService {
         ]);
         return $data->fetch(PDO::FETCH_ASSOC);
     }
-/*
+
     static function createChat($emailOfCustomer){
         $db = new Connect;
         //create the chat
@@ -153,7 +152,7 @@ class ChatService {
             return $OutputData;
         }
     }
-*/
+
     static function sendEmail($chat_id){
         $user_id = LoginService::AuthorizeToken();
         $email = ChatService::getEmailFromUser();
