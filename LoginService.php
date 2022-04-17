@@ -16,9 +16,10 @@ class LoginService
         if($OutputData == false){
             echo 'password and email do not match';
             http_response_code(401);
+            exit;
         }
         LoginService::createToken($OutputData["user_id"]);
-        self::updateUserStatus(1);
+        self::updateUserStatus(null, 1);
         return json_encode($OutputData);
     }
 
