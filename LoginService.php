@@ -95,21 +95,15 @@ class LoginService
 
     static function autoLogOff(){
         //TODO: Call this every x0 minutes
-        if((session_status() == PHP_SESSION_ACTIVE)){
-            //check if session is still active
-            self::LogOff(null);
-        }
-        else{
-            //check if token is still veritable
-            //have this in the else so less queries are made
-            //TODO: authorize the newest token for every user in the database which is logged in
-            $db = new Connect;
-            $messages = array();
-            $data = $db->prepare('SELECT * FROM (SELECT t.* FROM token t INNER JOIN chatuser u ON t.user_id = u.user_id WHERE u.status_id = 1 ORDER BY token_id DESC) AS sub_query GROUP BY sub_query.user_id');
-            $data->execute();
-            while ($OutputData = $data->fetch(PDO::FETCH_ASSOC)) {
-                self::AuthorizeToken($OutputData["unique_id"]);
-            }
+        //check if token is still veritable
+        //have this in the else so less queries are made
+        //TODO: authorize the newest token for every user in the database which is logged in
+        $db = new Connect;
+        $messages = array();
+        $data = $db->prepare('SELECT * FROM (SELECT t.* FROM token t INNER JOIN chatuser u ON t.user_id = u.user_id WHERE u.status_id = 1 ORDER BY token_id DESC) AS sub_query GROUP BY sub_query.user_id');
+        $data->execute();
+        while ($OutputData = $data->fetch(PDO::FETCH_ASSOC)) {
+            self::AuthorizeToken($OutputData["unique_id"]);
         }
     }
 
