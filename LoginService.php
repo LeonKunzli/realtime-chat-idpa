@@ -23,8 +23,8 @@ class LoginService
     }
 
     static function updateUserStatus($user, $status){
-        if($user = null) {
-            $user = self::AuthorizeToken();
+        if($user == null) {
+            $user = $_SESSION["user_id"];
         }
         $db = new Connect;
         $data = $db->prepare('UPDATE chatuser SET status_id = :status WHERE user_id = :user_id');
@@ -34,16 +34,19 @@ class LoginService
         ]);
     }
 
-    static function AuthorizeToken(){
+    static function AuthorizeToken($token){
         //see if token was created more than 30 mins ago
-        $token = $_SESSION["token"];
+        if($token == null) {
+            $token = $_SESSION["token"];
+        }
         $db = new Connect;
-        $data = $db->prepare('SELECT creation_timestamp, user_id FROM token WHERE unique_id = :unique_id AND creation_timestamp BETWEEN NOW() - INTERVAL 30 MINUTE AND NOW()');
+        $data = $db->prepare('SELECT user_id FROM token WHERE unique_id = :unique_id AND creation_timestamp BETWEEN NOW() - INTERVAL 30 MINUTE AND NOW()');
         $data->execute([
             ':unique_id' => $token
         ]);
         $OutputData = $data->fetch(PDO::FETCH_ASSOC);
         if($OutputData==false){
+            self::LogOff(null);
             echo 'Your Token has expired.';
             http_response_code(401);
             exit();
@@ -68,7 +71,6 @@ class LoginService
             ]);
         }
         else{
-            //TODO: if email is not unique
             echo 'this email is already in use';
             http_response_code(401);
             exit;
@@ -91,14 +93,31 @@ class LoginService
         return true;
     }
 
-    static function getAllInactiveUsers(){
-        //TODO: Get all users with either no session or expired token and log them off
+    static function autoLogOff(){
+        //TODO: Call this every x0 minutes
+        if((session_status() == PHP_SESSION_ACTIVE)){
+            //check if session is still active
+            self::LogOff(null);
+        }
+        else{
+            //check if token is still veritable
+            //have this in the else so less queries are made
+            //TODO: authorize the newest token for every user in the database which is logged in
+            $db = new Connect;
+            $messages = array();
+            $data = $db->prepare('SELECT * FROM (SELECT t.* FROM token t INNER JOIN chatuser u ON t.user_id = u.user_id WHERE u.status_id = 1 ORDER BY token_id DESC) AS sub_query GROUP BY sub_query.user_id');
+            $data->execute();
+            while ($OutputData = $data->fetch(PDO::FETCH_ASSOC)) {
+                self::AuthorizeToken($OutputData["unique_id"]);
+            }
+        }
     }
 
     static function CreateToken($user_id){
         $token = uniqid("t_");
         session_start();
         $_SESSION["token"] = $token;
+        $_SESSION["user_id"] = $user_id;
         $db = new Connect;
         $data = $db->prepare('INSERT INTO token(unique_id, user_id) VALUES(:unique_id, :user_id)');
         $data->execute([

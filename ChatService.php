@@ -9,7 +9,6 @@ require_once 'LoginService.php';
 require_once __DIR__ . '/config.php';
 class ChatService {
     static function GetMessages($chat_id){
-        LoginService::AuthorizeToken();
         if(ChatService::isUserInChat(LoginService::AuthorizeToken(), $chat_id)) {
             $db = new Connect;
             $messages = array();
@@ -95,7 +94,7 @@ class ChatService {
     }
 
     static function getEmailFromUser(){
-        $user_id = LoginService::AuthorizeToken();
+        $user_id = $_SESSION["user_id"];
         $db = new Connect;
         $data = $db->prepare('SELECT email FROM chatuser WHERE user_id = :user_id;');
         $data->execute([
@@ -115,7 +114,7 @@ class ChatService {
         $chat_id = self::getChatFromUUID($chatUUID);
         //Create user_chats for both users
         //TODO: fix incorrect integer value thing
-        $data = $db->prepare('INSERT INTO user_chat(user_id, chat_id) VALUES((SELECT user_id FROM chatuser WHERE email = :email) AS sub_query, :chat_id)');
+        $data = $db->prepare('INSERT INTO user_chat(user_id, chat_id) VALUES((SELECT user_id FROM chatuser WHERE email = :email), :chat_id)');
         $data->execute([
             ':chat_id' => $chat_id,
             ':email' => $emailOfCustomer
