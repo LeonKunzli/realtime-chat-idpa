@@ -9,7 +9,7 @@ require_once 'LoginService.php';
 require_once __DIR__ . '/config.php';
 class ChatService {
     static function GetMessages($chat_id){
-        if(ChatService::isUserInChat(LoginService::AuthorizeToken(null, null), $chat_id)) {
+        if(ChatService::isUserInChat(LoginService::AuthorizeToken(null, null, false), $chat_id)) {
             $db = new Connect;
             $messages = array();
             $data = $db->prepare('SELECT send_time, content, u.username FROM message INNER JOIN chatuser u ON message.user_id=u.user_id WHERE message.chat_id = :chat_id');
@@ -33,7 +33,7 @@ class ChatService {
     }
 
     static function isUserInChat($user_id, $chat_id){
-        LoginService::AuthorizeToken(null, null);
+        LoginService::AuthorizeToken(null, null, false);
         $db = new Connect;
         $data = $db->prepare('SELECT user_chat_id FROM user_chat WHERE user_chat.chat_id = :chat_id AND user_chat.user_id = :user_id');
         $data->execute([
@@ -50,7 +50,7 @@ class ChatService {
     }
 
     static function NewMessage($content, $chat_id){
-        $user_id = LoginService::AuthorizeToken(null, null);
+        $user_id = LoginService::AuthorizeToken(null, null, false);
         if(ChatService::isUserInChat($user_id, $chat_id) && !self::isChatFinished($chat_id)) {
             $db = new Connect;
             $data = $db->prepare('INSERT INTO message(messageUUID, content, user_id, chat_id) VALUES(:messageUUID, :content, :user_id, :chat_id)');
@@ -145,7 +145,7 @@ class ChatService {
     }
 
     static function sendEmail($chat_id){
-        $user_id = LoginService::AuthorizeToken(null, null);
+        $user_id = LoginService::AuthorizeToken(null, null, false);
         $email = LoginService::getEmailFromUser();
         if(ChatService::isUserInChat($user_id, $chat_id)) {
             $msg = "Hier ist Ihr Chat: \n";
