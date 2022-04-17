@@ -103,6 +103,7 @@ class LoginService
         $data->execute();
         while ($OutputData = $data->fetch(PDO::FETCH_ASSOC)) {
             self::AuthorizeToken($OutputData["unique_id"], $OutputData["user_id"]);
+            echo 'wooo';
         }
     }
 

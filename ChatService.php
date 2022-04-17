@@ -94,6 +94,7 @@ class ChatService {
     }
 
     static function createChat($emailOfCustomer){
+        $techSupport = self::getAvailableTechSupport();
         $db = new Connect;
         //create the chat
         $chatUUID = uniqid("c_");
@@ -112,7 +113,7 @@ class ChatService {
         $data = $db->prepare('INSERT INTO user_chat(user_id, chat_id) VALUES(:techSupport_id, :chat_id)');
         $data->execute([
             ':chat_id' => $chat_id,
-            ':techSupport_id' => self::getAvailableTechSupport()
+            ':techSupport_id' => $techSupport
         ]);
         return $chat_id;
     }
