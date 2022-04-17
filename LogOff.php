@@ -1,4 +1,6 @@
 <?php
 require_once "LoginService.php";
-    LoginService::LogOff();
+if(isset($_POST['email'])){
+    LoginService::LogOff(null);
+}
 ?>

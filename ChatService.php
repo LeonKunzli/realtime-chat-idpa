@@ -93,16 +93,6 @@ class ChatService {
         ]);
     }
 
-    static function getEmailFromUser(){
-        $user_id = $_SESSION["user_id"];
-        $db = new Connect;
-        $data = $db->prepare('SELECT email FROM chatuser WHERE user_id = :user_id;');
-        $data->execute([
-            ':chat_id' => $user_id
-        ]);
-        return $data->fetch(PDO::FETCH_ASSOC);
-    }
-
     static function createChat($emailOfCustomer){
         $db = new Connect;
         //create the chat
@@ -154,7 +144,7 @@ class ChatService {
 
     static function sendEmail($chat_id){
         $user_id = LoginService::AuthorizeToken();
-        $email = ChatService::getEmailFromUser();
+        $email = LoginService::getEmailFromUser();
         if(ChatService::isUserInChat($user_id, $chat_id)) {
             $msg = "Hier ist Ihr Chat: \n";
             $db = new Connect;

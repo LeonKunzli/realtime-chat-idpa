@@ -113,6 +113,16 @@ class LoginService
         }
     }
 
+    static function getEmailFromUser(){
+        $user_id = $_SESSION["user_id"];
+        $db = new Connect;
+        $data = $db->prepare('SELECT email FROM chatuser WHERE user_id = :user_id;');
+        $data->execute([
+            ':chat_id' => $user_id
+        ]);
+        return $data->fetch(PDO::FETCH_ASSOC);
+    }
+
     static function CreateToken($user_id){
         $token = uniqid("t_");
         session_start();
