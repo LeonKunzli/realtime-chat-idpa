@@ -123,7 +123,8 @@ class ChatService {
         $data->execute([
             ':chatUUID' => $chatUUID
         ]);
-        return $data->fetch(PDO::FETCH_ASSOC);
+        $OutputData = $data->fetch(PDO::FETCH_ASSOC)
+        return $OutputData["chat_id"];
     }
 
     static function getAvailableTechSupport(){
