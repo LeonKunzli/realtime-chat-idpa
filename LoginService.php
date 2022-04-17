@@ -34,7 +34,7 @@ class LoginService
         ]);
     }
 
-    static function AuthorizeToken($token){
+    static function AuthorizeToken($token, $user_id){
         //see if token was created more than 30 mins ago
         if($token == null) {
             $token = $_SESSION["token"];
@@ -46,7 +46,7 @@ class LoginService
         ]);
         $OutputData = $data->fetch(PDO::FETCH_ASSOC);
         if($OutputData==false){
-            self::LogOff(null);
+            self::LogOff($user_id);
             echo 'Your Token has expired.';
             http_response_code(401);
             exit();
@@ -103,7 +103,7 @@ class LoginService
         $data = $db->prepare('SELECT * FROM (SELECT t.* FROM token t INNER JOIN chatuser u ON t.user_id = u.user_id WHERE u.status_id = 1 ORDER BY token_id DESC) AS sub_query GROUP BY sub_query.user_id');
         $data->execute();
         while ($OutputData = $data->fetch(PDO::FETCH_ASSOC)) {
-            self::AuthorizeToken($OutputData["unique_id"]);
+            self::AuthorizeToken($OutputData["unique_id"], $OutputData["user_id"]);
         }
     }
 
