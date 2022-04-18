@@ -1,4 +1,5 @@
 <?php
+header("Access-Control-Allow-Origin: *");
 require_once "ChatService.php";
 if(isset($_PUT['chat_id'])){
     ChatService::endChat($_PUT['chat_id']);

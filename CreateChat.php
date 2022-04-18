@@ -1,4 +1,5 @@
 <?php
+header("Access-Control-Allow-Origin: *");
 require_once "ChatService.php";
 if(isset($_POST['email'])){
     ChatService::createChat($_POST['email']);
