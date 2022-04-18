@@ -13,7 +13,7 @@ class LoginService
         ]);
         $OutputData = $data->fetch(PDO::FETCH_ASSOC);
         //put token into database with expiry date
-        if(is_int($OutputData["user_id"])){
+        if($OutputData == false){
             echo 'password and email do not match';
             http_response_code(401);
             exit;
@@ -87,7 +87,6 @@ class LoginService
             ':email' => $email
         ]);
         $OutputData = $data->fetch(PDO::FETCH_ASSOC);
-        echo json_encode($OutputData);
         if($OutputData["COUNT(user_id)"]!=0){
             return false;
         }
