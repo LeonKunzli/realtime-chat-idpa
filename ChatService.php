@@ -129,8 +129,7 @@ class ChatService {
 
     static function getAvailableTechSupport(){
         $db = new Connect;
-        $data = $db->prepare('SELECT * FROM chatuser u WHERE u.status_id = 1 AND u.role_id = 1 AND (SELECT COUNT(*) FROM (SELECT uc.user_id FROM user_chat uc INNER JOIN chat c ON uc.chat_id = c.chat_id WHERE c.status_id = 1) AS subquery)<5 ORDER BY u.user_id LIMIT 1;
-');
+        $data = $db->prepare('SELECT * FROM chatuser u WHERE u.status_id = 1 AND u.role_id = 1 AND (SELECT COUNT(*) FROM (SELECT uc.user_id FROM user_chat uc INNER JOIN chat c ON uc.chat_id = c.chat_id WHERE c.status_id = 1 GROUP BY uc.user_id) AS subquery)<5 ORDER BY u.user_id ASC LIMIT 1;');
         $data->execute();
         $OutputData = $data->fetch(PDO::FETCH_ASSOC);
         if(!is_int($OutputData["user_id"])){
